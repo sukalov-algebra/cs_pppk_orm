@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="console/console.csproj" />
+  <Project Path="orm/orm.csproj" />
+  <Project Path="unittest/unittest.csproj" />
+</Solution>
