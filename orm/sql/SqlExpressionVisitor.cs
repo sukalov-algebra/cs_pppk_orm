@@ -60,6 +60,7 @@ namespace orm.sql
             // 
             // Handle property like x.Name
             //
+
             _sb.Append('\"');
             _sb.Append(node.Member.Name);
             _sb.Append('\"');

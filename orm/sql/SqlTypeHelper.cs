@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace orm.sql
@@ -28,6 +29,12 @@ namespace orm.sql
             return PostgresTypeMap.TryGetValue(type, out var sqlType)
                 ? sqlType
                 : "TEXT";
+        }
+
+        internal static bool TryGetSqlType(PropertyInfo property, out string sqlType)
+        {
+            sqlType = GetSqlType(property.PropertyType);
+            return true;
         }
     }
 }
