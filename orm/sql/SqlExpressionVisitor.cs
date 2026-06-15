@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -17,7 +16,6 @@ namespace orm.sql
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            //_sb.Append("(");
             Visit(node.Left);
 
             switch (node.NodeType)
@@ -51,29 +49,37 @@ namespace orm.sql
             }
 
             Visit(node.Right);
-            //_sb.Append(")");
             return node;
         }
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            // 
-            // Handle property like x.Name
-            //
+            if (IsColumn(node))
+            {
+                _sb.Append('\"');
+                _sb.Append(node.Member.Name);
+                _sb.Append('\"');
+                return node;
+            }
 
-            _sb.Append('\"');
-            _sb.Append(node.Member.Name);
-            _sb.Append('\"');
+            _sb.Append(SqlFormatHelper.GetSqlValue(Evaluate(node)));
             return node;
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            if (node.Type == typeof(string) || node.Type == typeof(DateTime))
-                _sb.Append($"'{node.Value}'");
-            else
-                _sb.Append(node.Value);
+            _sb.Append(SqlFormatHelper.GetSqlValue(node.Value));
             return node;
         }
+
+        private static bool IsColumn(Expression? node) => node switch
+        {
+            ParameterExpression => true,
+            MemberExpression m => IsColumn(m.Expression),
+            _ => false
+        };
+
+        private static object? Evaluate(Expression node) =>
+            Expression.Lambda(node).Compile().DynamicInvoke();
     }
 }

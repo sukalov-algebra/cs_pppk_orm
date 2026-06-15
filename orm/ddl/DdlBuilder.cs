@@ -116,17 +116,7 @@ namespace orm.ddl
             return sb.ToString();
         }
 
-        private static bool IsNavigation(PropertyInfo p)
-        {
-            if (p.GetCustomAttribute<HasManyAttribute>() != null) return true;
-            if (p.GetCustomAttribute<HasOneAttribute>() != null) return true;
-
-            var t = p.PropertyType;
-            if (t != typeof(string) && t != typeof(byte[]) && typeof(IEnumerable).IsAssignableFrom(t))
-                return true;
-
-            return false;
-        }
+        private static bool IsNavigation(PropertyInfo p) => EntityColumns.IsNavigation(p);
 
         private static bool IsNullable(PropertyInfo p)
         {
@@ -139,11 +129,7 @@ namespace orm.ddl
                 || info.ReadState == NullabilityState.Nullable;
         }
 
-        private static string GetColumnName(PropertyInfo p)
-        {
-            var col = p.GetCustomAttribute<ColumnAttribute>();
-            return string.IsNullOrWhiteSpace(col?.Name) ? p.Name : col!.Name!;
-        }
+        private static string GetColumnName(PropertyInfo p) => EntityColumns.ColumnName(p);
 
         private static string Quote(string identifier) => $"\"{identifier}\"";
     }
